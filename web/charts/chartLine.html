@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<head>
+    <title>ECharts</title>
+    <meta charset="UTF-8">
+     <script src="../js/echarts.min.js"></script>
+      <script src="../js/common.js"></script>
+</head>
+<body>
+    <div id="main" style="height:400px"></div>
+	<script type="text/javascript">
+
+		var myChart = echarts.init(document.getElementById('main'));
+	    var   option = {
+	    	    tooltip : {
+	    	        trigger: 'axis',
+	    	        formatter: function (params) {
+	    	            var res = params[0].seriesName + ' ' + params[0].name;
+	    	            res += '<br/>  开盘 : ' + params[0].value[0] + '  最高 : ' + params[0].value[3];
+	    	            res += '<br/>  收盘 : ' + params[0].value[1] + '  最低 : ' + params[0].value[2];
+	    	            return res;
+	    	        }
+	    	    },
+	    	    legend: {
+	    	        data:['上证指数']
+	    	    },
+	    	    toolbox: {
+	    	        show : true,
+	    	        feature : {
+	    	            mark : {show: true},
+	    	            dataZoom : {show: true},
+	    	            dataView : {show: true, readOnly: false},
+	    	            restore : {show: true},
+	    	            saveAsImage : {show: true}
+	    	        }
+	    	    },
+	    	    dataZoom : {
+	    	        show : true,
+	    	        realtime: true,
+	    	        start : 0,
+	    	        end : 50
+	    	    },
+	    	    xAxis : [
+	    	        {
+	    	            type : 'category',
+	    	            boundaryGap : true,
+	    	            axisTick: {onGap:false},
+	    	            splitLine: {show:false},
+	    	            data : []
+	    	        }
+	    	    ],
+	    	    yAxis : [
+	    	        {
+	    	            type : 'value',
+	    	            scale:true,
+	    	            boundaryGap: [0.01, 0.01]
+	    	        }
+	    	    ],
+	    	    series : [
+	    	        {
+	    	            name:'上证指数',
+	    	            type:'k',
+	    	            barMaxWidth: 20,
+	    	            itemStyle: {
+	    	                normal: {
+	    	                    color: 'red',           // 阳线填充颜色
+	    	                    color0: 'lightgreen',   // 阴线填充颜色
+	    	                    lineStyle: {
+	    	                        width: 2,
+	    	                        color: 'orange',    // 阳线边框颜色
+	    	                        color0: 'green'     // 阴线边框颜色
+	    	                    }
+	    	                },
+	    	                emphasis: {
+	    	                    color: 'black',         // 阳线填充颜色
+	    	                    color0: 'white'         // 阴线填充颜色
+	    	                }
+	    	            },
+	    	            data:[ // 开盘，收盘，最低，最高
+	    	                {
+	    	                    value:[2320.26,2302.6,2287.3,2362.94],
+	    	                    itemStyle: {
+	    	                        normal: {
+	    	                            color0: 'blue',         // 阴线填充颜色
+	    	                            lineStyle: {
+	    	                                width: 3,
+	    	                                color0: 'blue'      // 阴线边框颜色
+	    	                            }
+	    	                        },
+	    	                        emphasis: {
+	    	                            color0: 'blue'          // 阴线填充颜色
+	    	                        }
+	    	                    }
+	    	                },
+	    	               []
+	    	            ],
+	    	            markPoint : {
+	    	                symbol: 'star',
+	    	                //symbolSize:20,
+	    	                itemStyle:{
+	    	                    normal:{label:{position:'top'}}
+	    	                },
+	    	                data : [
+	    	                    {name : '最高', value : 2444.8, xAxis: '2013/2/18', yAxis: 2466}
+	    	                ]
+	    	            }
+	    	        }
+	    	    ]
+	    	};
+		//alert(" option >>>>>" + JSON.stringify(option.xAxis[0]["data"]));
+		/*option.xAxis[0]["data"] = [ "2016-07-12", "2016-07-11", "2016-07-10",
+				"2016-07-09" ]
+		//alert(" data >>>>>" + JSON.stringify(option.series[0].data[1]));
+		option.series[0].data = [ option.series[0].data[0],
+				[ 19.5, 18.45, 18.15, 19.5 ], [ 18.66, 18.66, 18.41, 18.66 ],
+				[ 16.96, 16.96, 16.96, 16.96 ]];
+		var obj1 =  option.series[0].data[0];
+		var obj2 = [ [ 19.5, 18.45, 18.15, 19.5 ], [ 18.66, 18.66, 18.41, 18.66 ], [ 16.96, 16.96, 16.96, 16.96 ] ];
+		*/
+	//	alert(" obj3 >>>>>" + JSON.stringify(obj2[0]));
+		//myChart.setOption(option);
+		
+		function handle(event){
+			var obj = JSON.parse(event.data);
+			 
+			var data = obj.data;
+			option.series[0].data[0].value=data[0];
+			var json =[option.series[0].data[0]];
+			for(var i=1; i<data.length; i++) 
+			{ 
+				json[i]=data[i];
+			} 
+			 option.series[0].data = json ;
+		     option.xAxis[0].data  =  obj.date  ;
+			 myChart.setOption(option); 
+		}
+		
+		
+	</script>
+</body>
