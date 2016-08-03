@@ -2,6 +2,7 @@
 <head>
     <title>ECharts</title>
     <script src="../js/echarts.min.js"></script>
+    <script src="../js/common.js"></script>
 </head>
 <body>
     <div id="main" style="height:400px"></div>
@@ -106,5 +107,20 @@
 	    	};
                     
         myChart.setOption(option); 
+        
+    	function handle(event){
+			var obj = JSON.parse(event.data);
+			 
+			var data = obj.data;
+			option.series[0].data[0].value=data[0];
+			var json =[option.series[0].data[0]];
+			for(var i=1; i<data.length; i++) 
+			{ 
+				json[i]=data[i];
+			} 
+			 option.series[0].data = json ;
+		     option.xAxis[0].data  =  obj.date  ;
+			 myChart.setOption(option); 
+		}
     </script>
 </body>

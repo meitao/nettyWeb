@@ -34,8 +34,8 @@ public class WebsocketChatServer {
 			// 在这个例子中，这不会发生，但你可以优雅地关闭你的服务器。
 			f.channel().closeFuture().sync();
 		} finally {
-			workerGroup.shutdownGracefully();
-			bossGroup.shutdownGracefully();
+			workerGroup.shutdownGracefully().sync();
+			bossGroup.shutdownGracefully().sync();
 
 			System.out.println("WebsocketChatServer 关闭了");
 		}

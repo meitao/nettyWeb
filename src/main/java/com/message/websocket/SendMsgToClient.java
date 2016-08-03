@@ -14,11 +14,14 @@ public class SendMsgToClient implements Runnable {
 
 		while(true){
 			try {
-				Thread.sleep(30000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			for (Channel channel : channels) {
+				channel.pipeline();
+				System.out.println("channels 大小 》》》"+channels.size()+"  channel>>>>"+channel.toString());
+				System.out.println("isActive>>"+channel.isActive()+"  isOpen>> "+channel.isOpen() +"  isWritable>> "+channel.isWritable() +"   isRegistered>> "+channel.isRegistered() );
 				String data = JsonRead.getData();
 				channel.writeAndFlush(new TextWebSocketFrame(data));
 			}

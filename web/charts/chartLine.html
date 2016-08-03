@@ -123,6 +123,7 @@
 			var obj = JSON.parse(event.data);
 			 
 			var data = obj.data;
+			alert("data >>"+data);
 			option.series[0].data[0].value=data[0];
 			var json =[option.series[0].data[0]];
 			for(var i=1; i<data.length; i++) 

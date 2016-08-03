@@ -114,7 +114,6 @@ public class JsonRead {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(result);
 		return result;
 		
 	}

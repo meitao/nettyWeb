@@ -16,10 +16,10 @@ public class WebsocketChatServerInitializer extends ChannelInitializer<SocketCha
 		pipeline.addLast(new HttpServerCodec());
 		pipeline.addLast(new HttpObjectAggregator(64*1024));
 		pipeline.addLast(new ChunkedWriteHandler());
-//		pipeline.addLast(new HttpjsRequestHandler());
-		pipeline.addLast(new HttpRequestHandler("/ws"));
-// 		pipeline.addLast(new HttpFileServerHandler("aa"));
-		pipeline.addLast(new WebSocketServerProtocolHandler("/ws"));
+ 		pipeline.addLast(new HttpjsRequestHandler("/ws"));
+//		pipeline.addLast(new HttpRequestHandler("/ws"));
+//  	pipeline.addLast(new HttpFileServerHandler("aa"));
+ 		pipeline.addLast(new WebSocketServerProtocolHandler("/ws"));
  		pipeline.addLast(new TextWebSocketFrameHandler());
 
 	}

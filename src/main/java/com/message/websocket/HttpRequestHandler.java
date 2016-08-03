@@ -36,7 +36,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		//String path = "J:/work/pythonWorkSpace/nettyWeb/web/charts/WebsocketChatClient.html";
+//		String path = "J:/work/pythonWorkSpace/nettyWeb/web/charts/WebsocketChatClient.html";
 		String path = "J:/work/pythonWorkSpace/nettyWeb/web/charts/test.html";	
 		path = !path.contains("file:") ? path : path.substring(5);
 		INDEX = new File(path);

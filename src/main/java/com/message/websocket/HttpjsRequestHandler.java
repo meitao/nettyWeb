@@ -28,25 +28,38 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
 
 public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> { //1
 
+	private final String wsUri;
+
+	private final String webPath = "J:/work/pythonWorkSpace/nettyWeb/web/";
+	
+	public HttpjsRequestHandler(String wsUri) {
+		this.wsUri = wsUri;
+	}
 
 	@Override
 	public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
 		String uri =request.uri();
-		System.out.println(">>>>>"+uri);
-		if(uri.indexOf(".js")>0){
-			String jsName ="J:/work/pythonWorkSpace/nettyWeb/web/js/"+uri.substring(uri.lastIndexOf("/")+1);
-			RandomAccessFile file1 = new RandomAccessFile(jsName, "r");//4
-			//sendJavaScript(ctx, request, file1);	
-			
-			sendMsg(ctx, request,new File(jsName));
-			
-		} else if("/".equals(uri)){
-			RandomAccessFile file = new RandomAccessFile("J:/work/pythonWorkSpace/nettyWeb/web/charts/test.html", "r");//4
-			sendFile(ctx, request, file);
+		System.out.println("uri >>>>>"+uri+"  channelId>>>>"+ctx.channel().toString());
+		if (wsUri.equalsIgnoreCase(request.uri())) {
+			ctx.fireChannelRead(request.retain());                  
+		} else {
+			if(uri.indexOf(".js")>0){
+				String jsName =webPath+"js/"+uri.substring(uri.lastIndexOf("/")+1);
+				RandomAccessFile file1 = new RandomAccessFile(jsName, "r");//4
+				if(jsName.indexOf("echarts.min")>0){
+					sendMsg(ctx, request,new File(jsName));
+				}else{
+					sendJavaScript(ctx, request, file1);	
+				}
+			} else if("/".equals(uri)){
+				RandomAccessFile file = new RandomAccessFile(webPath+"charts/test.html", "r");//4
+				sendFile(ctx, request, file);
+			}else{
+				ctx.channel().close();
+			}
 		}
 	}
 
@@ -98,15 +111,15 @@ public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRe
 			} else {
 				ctx.write(new ChunkedNioFile(file.getChannel()));
 			}
-			ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);           //8
-			if (!keepAlive) {
+			ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT).addListener(ChannelFutureListener.CLOSE);           //8
+		/**	if (!keepAlive) {
 				future.addListener(ChannelFutureListener.CLOSE);        //9
-			}
+			}*/
 			file.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	} 
 
 	private void sendMsg(ChannelHandlerContext ctx, FullHttpRequest request ,File file){
 
@@ -115,7 +128,7 @@ public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRe
 		StringBuilder sb= new StringBuilder();
 		BufferedReader br  =null;
 		try {
-			 br = new BufferedReader(new FileReader(file));
+			br = new BufferedReader(new FileReader(file));
 			String msg ;
 			while((msg = br.readLine()) != null){
 				sb.append(msg).append("\n");
@@ -131,16 +144,17 @@ public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRe
 				e.printStackTrace();
 			}
 		}
-		
+
 		boolean keepAlive = HttpUtil.isKeepAlive(request);
-		
+
 		if (keepAlive) {                                        //5
-			response.headers().set(HttpHeaderNames.CONTENT_LENGTH, sb.length());
+			response.headers().set(HttpHeaderNames.CONTENT_LENGTH, file.length());
 			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 			response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
 		}
-//		System.out.println(sb.toString());
+		//		System.out.println(sb.toString());
 		ByteBuf buffer = Unpooled.copiedBuffer(sb.toString(),CharsetUtil.UTF_8);  
+		System.out.println(">>>>>  "+buffer.array().length);
 		response.content().writeBytes(buffer);  
 		//buffer.release();  
 		ctx.writeAndFlush(response).addListener(new ChannelFutureListener(){
@@ -151,11 +165,12 @@ public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRe
 				System.out.println(">>>>>关闭  isDone 为 "+future.isDone());
 				System.out.println(">>>>>关闭  isSuccess 为 "+future.isSuccess());
 				System.out.println(">>>>>关闭  ChannelFuture 为 "+future.getClass());
- 				future.channel().close();
+			 	future.channel().close();
 			}
 
 		}); 
 	}
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 			throws Exception {
