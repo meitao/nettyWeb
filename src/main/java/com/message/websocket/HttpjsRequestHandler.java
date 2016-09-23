@@ -44,6 +44,7 @@ public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRe
 		String uri =request.uri();
 		System.out.println("uri >>>>>"+uri+"  channelId>>>>"+ctx.channel().toString());
 		if (wsUri.equalsIgnoreCase(request.uri())) {
+			Session.addSession("ws", ctx.channel()); 
 			ctx.fireChannelRead(request.retain());                  
 		} else {
 			if(uri.indexOf(".js")>0){
@@ -170,7 +171,10 @@ public class HttpjsRequestHandler extends SimpleChannelInboundHandler<FullHttpRe
 
 		}); 
 	}
-
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception { // (5)
+		Channel incoming = ctx.channel();
+	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 			throws Exception {
